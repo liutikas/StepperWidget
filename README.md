@@ -1,0 +1,1 @@
+![alt text](https://github.com/adam-p/markdown-here/raw/master/stepper.gif "Screen recording of the widget")
