@@ -2,20 +2,21 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
     <ImageButton
         android:id="@+id/plus"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:src="@drawable/ic_add"/>
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_add"
+        android:background="@drawable/bg_add"/>
     <FrameLayout android:layout_width="56dp"
         android:layout_height="44dp">
         <TextView
             android:id="@+id/label1"
-            android:layout_width="56dp"
+            android:layout_width="48dp"
             android:layout_height="44dp"
             android:textSize="18sp"
             android:gravity="center"/>
         <TextView
             android:id="@+id/label2"
-            android:layout_width="56dp"
+            android:layout_width="48dp"
             android:layout_height="44dp"
             android:textSize="18sp"
             android:gravity="center"
@@ -24,7 +25,8 @@
 
     <ImageButton
         android:id="@+id/minus"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:src="@drawable/ic_remove"/>
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_remove"
+        android:background="@drawable/bg_remove"/>
 </merge>
