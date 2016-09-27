@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <ImageButton
+        android:id="@+id/plus"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:src="@drawable/ic_add"/>
+    <FrameLayout android:layout_width="56dp"
+        android:layout_height="44dp">
+        <TextView
+            android:id="@+id/label1"
+            android:layout_width="56dp"
+            android:layout_height="44dp"
+            android:textSize="18sp"
+            android:gravity="center"/>
+        <TextView
+            android:id="@+id/label2"
+            android:layout_width="56dp"
+            android:layout_height="44dp"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:visibility="invisible"/>
+    </FrameLayout>
+
+    <ImageButton
+        android:id="@+id/minus"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:src="@drawable/ic_remove"/>
+</merge>
