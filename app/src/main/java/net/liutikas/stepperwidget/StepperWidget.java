@@ -21,7 +21,11 @@ public class StepperWidget extends LinearLayout {
     private int mCounter = 0;
     private int mChange = 0;
 
-    private ValueAnimator mAnimator;
+    private int mMin = Integer.MIN_VALUE;
+    private int mMax = Integer.MAX_VALUE;
+
+    private ValueAnimator mSwitchAnimator;
+    private ValueAnimator mBounceAnimator;
 
     public StepperWidget(Context context) {
         this(context, null);
@@ -57,17 +61,27 @@ public class StepperWidget extends LinearLayout {
         updateLabel(0);
     }
 
+    public void setMax(int max) {
+        mMax = max;
+        updateLabel(0);
+    }
+
+    public void setMin(int min) {
+        mMin = min;
+        updateLabel(0);
+    }
+
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void initalizeAnimator() {
-        mAnimator = ValueAnimator.ofInt(100);
-        mAnimator.setDuration(300);
-        mAnimator.setInterpolator(new FastOutSlowInInterpolator());
-        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        mSwitchAnimator = ValueAnimator.ofInt(100);
+        mSwitchAnimator.setDuration(300);
+        mSwitchAnimator.setInterpolator(new FastOutSlowInInterpolator());
+        mSwitchAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 Integer value = (Integer) valueAnimator.getAnimatedValue();
-                if (value < 100 && mChange == 0) {
-                    mAnimator.end();
+                if (mChange == 0) {
+                    // Do nothing
                 } else if (mChange < 0) {
                     getEnteringLabel().setTranslationY(100 - value);
                     getLeavingLabel().setTranslationY(-value);
@@ -77,7 +91,7 @@ public class StepperWidget extends LinearLayout {
                 }
             }
         });
-        mAnimator.addListener(new Animator.AnimatorListener() {
+        mSwitchAnimator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {}
 
@@ -93,6 +107,25 @@ public class StepperWidget extends LinearLayout {
             @Override
             public void onAnimationRepeat(Animator animator) {}
         });
+        mBounceAnimator = ValueAnimator.ofInt(100);
+        mBounceAnimator.setDuration(300);
+        mBounceAnimator.setInterpolator(new FastOutSlowInInterpolator());
+        mBounceAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                Integer value = (Integer) valueAnimator.getAnimatedValue();
+                if (value > 50) {
+                    value = 100 - value;
+                }
+                if (mChange == 0) {
+                    // Do nothing.
+                } else if (mChange < 0) {
+                    getLeavingLabel().setTranslationY(-value);
+                } else {
+                    getLeavingLabel().setTranslationY(value);
+                }
+            }
+        });
     }
 
     private TextView getEnteringLabel() {
@@ -106,31 +139,54 @@ public class StepperWidget extends LinearLayout {
     private void updateLabel(int change) {
         mCounter += change;
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
-            updateLabelAnimated(change);
+            if (mBounceAnimator.isRunning()) {
+                mBounceAnimator.end();
+            }
+            if (mSwitchAnimator.isRunning()) {
+                mSwitchAnimator.end();
+            }
+            if (mCounter < mMin) {
+                mCounter = mMin;
+                updateLabelVisibility(mLabelOneVisible);
+                bounceLabelAnimated(change);
+            } else if (mCounter > mMax) {
+                mCounter = mMax;
+                updateLabelVisibility(mLabelOneVisible);
+                bounceLabelAnimated(change);
+            } else {
+                switchLabelAnimated(change);
+            }
             return;
         }
-        if (mLabelOneVisible) {
-            mLabelTwo.setText(Integer.toString(mCounter));
-            mLabelOne.setVisibility(INVISIBLE);
-            mLabelTwo.setVisibility(VISIBLE);
-        } else {
+        updateLabelVisibility(!mLabelOneVisible);
+    }
+
+    private void updateLabelVisibility(boolean labelOneVisible) {
+        if (labelOneVisible) {
             mLabelOne.setText(Integer.toString(mCounter));
             mLabelOne.setVisibility(VISIBLE);
             mLabelTwo.setVisibility(INVISIBLE);
+        } else {
+            mLabelTwo.setText(Integer.toString(mCounter));
+            mLabelOne.setVisibility(INVISIBLE);
+            mLabelTwo.setVisibility(VISIBLE);
         }
-        mLabelOneVisible = !mLabelOneVisible;
+        mLabelOneVisible = labelOneVisible;
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private void updateLabelAnimated(final int change) {
-        if (mAnimator.isRunning()) {
-            mAnimator.end();
-        }
+    private void bounceLabelAnimated(int change) {
+        mChange = change;
+        mBounceAnimator.start();
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void switchLabelAnimated(final int change) {
         mChange = change;
         final TextView enteringLabel = getEnteringLabel();
         enteringLabel.setText(Integer.toString(mCounter));
         enteringLabel.setVisibility(VISIBLE);
 
-        mAnimator.start();
+        mSwitchAnimator.start();
     }
 }
