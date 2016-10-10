@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.util.AttributeSet;
 import android.view.View;
@@ -12,11 +13,19 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A simple widget that will allow users to step up and step down a number and a number will animate
  * as user presses the plus and minus buttons.
  */
 public class StepperWidget extends LinearLayout {
+    public interface OnUpdateListener {
+        void onUpdate(int oldValue, int newValue);
+    }
+
+    private final int mLabelHeight;
     private final ImageButton mPlusButton;
     private final ImageButton mMinusButton;
     private final TextView mLabelOne;
@@ -25,6 +34,7 @@ public class StepperWidget extends LinearLayout {
     private int mCounter = 0;
     private int mChange = 0;
 
+    private List<OnUpdateListener> mListeners;
     private int mMin = Integer.MIN_VALUE;
     private int mMax = Integer.MAX_VALUE;
 
@@ -47,6 +57,8 @@ public class StepperWidget extends LinearLayout {
         mMinusButton = (ImageButton) findViewById(R.id.minus);
         mLabelOne = (TextView) findViewById(R.id.label1);
         mLabelTwo = (TextView) findViewById(R.id.label2);
+        mLabelHeight =
+                context.getResources().getDimensionPixelSize(R.dimen.stepper_widget_label_height);
         mPlusButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,6 +74,7 @@ public class StepperWidget extends LinearLayout {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
             initalizeAnimator();
         }
+        mListeners = new ArrayList<>();
         updateLabel(0);
     }
 
@@ -85,6 +98,14 @@ public class StepperWidget extends LinearLayout {
         updateLabel(0);
     }
 
+    public void addOnUpdateListener(OnUpdateListener listener) {
+        mListeners.add(listener);
+    }
+
+    public void removeOnUpdateListener(OnUpdateListener listener) {
+        mListeners.remove(listener);
+    }
+
     /**
      * @return The value that the user has currently chosen using this widget.
      */
@@ -104,11 +125,11 @@ public class StepperWidget extends LinearLayout {
                 if (mChange == 0) {
                     // Do nothing
                 } else if (mChange < 0) {
-                    getEnteringLabel().setTranslationY(100 - value);
-                    getLeavingLabel().setTranslationY(-value);
+                    getEnteringLabel().setTranslationY((100 - value) * mLabelHeight / 100f);
+                    getLeavingLabel().setTranslationY(-value * mLabelHeight / 100f);
                 } else {
-                    getEnteringLabel().setTranslationY(-100 + value);
-                    getLeavingLabel().setTranslationY(value);
+                    getEnteringLabel().setTranslationY((-100 + value) * mLabelHeight / 100f);
+                    getLeavingLabel().setTranslationY(value * mLabelHeight / 100f);
                 }
             }
         });
@@ -141,9 +162,9 @@ public class StepperWidget extends LinearLayout {
                 if (mChange == 0) {
                     // Do nothing.
                 } else if (mChange < 0) {
-                    getLeavingLabel().setTranslationY(-value);
+                    getLeavingLabel().setTranslationY(-value * mLabelHeight / 100f);
                 } else {
-                    getLeavingLabel().setTranslationY(value);
+                    getLeavingLabel().setTranslationY(value * mLabelHeight / 100f);
                 }
             }
         });
@@ -175,11 +196,17 @@ public class StepperWidget extends LinearLayout {
                 updateLabelVisibility(mLabelOneVisible);
                 bounceLabelAnimated(change);
             } else {
+                for (OnUpdateListener listener : mListeners) {
+                    listener.onUpdate(mCounter - change, mCounter);
+                }
                 switchLabelAnimated(change);
             }
-            return;
+        } else {
+            updateLabelVisibility(!mLabelOneVisible);
+            for (OnUpdateListener listener : mListeners) {
+                listener.onUpdate(mCounter - change, mCounter);
+            }
         }
-        updateLabelVisibility(!mLabelOneVisible);
     }
 
     private void updateLabelVisibility(boolean labelOneVisible) {
