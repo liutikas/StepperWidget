@@ -12,6 +12,10 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+/**
+ * A simple widget that will allow users to step up and step down a number and a number will animate
+ * as user presses the plus and minus buttons.
+ */
 public class StepperWidget extends LinearLayout {
     private final ImageButton mPlusButton;
     private final ImageButton mMinusButton;
@@ -61,14 +65,31 @@ public class StepperWidget extends LinearLayout {
         updateLabel(0);
     }
 
+    /**
+     * Set the maximum value that the user is allowed to choose when using this widget.
+     * @param max The largest integer value that the user is allowed to enter when using this
+     *            widget.
+     */
     public void setMax(int max) {
         mMax = max;
         updateLabel(0);
     }
 
+    /**
+     * Set the minimum value that the user is allowed to choose when using this widget.
+     * @param min The smallest integer value that the user is allowed to enter when using this
+     *            widget.
+     */
     public void setMin(int min) {
         mMin = min;
         updateLabel(0);
+    }
+
+    /**
+     * @return The value that the user has currently chosen using this widget.
+     */
+    public int getValue() {
+        return mCounter;
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
