@@ -1,4 +1,4 @@
-package net.liutikas.stepperwidget;
+package net.liutikas.widget;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;

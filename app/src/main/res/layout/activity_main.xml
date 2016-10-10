@@ -8,8 +8,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="net.liutikas.stepperwidget.MainActivity">
-    <net.liutikas.stepperwidget.StepperWidget
+    tools:context="net.liutikas.example.net.liutikas.widget.example.MainActivity">
+    <net.liutikas.widget.StepperWidget
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 </RelativeLayout>

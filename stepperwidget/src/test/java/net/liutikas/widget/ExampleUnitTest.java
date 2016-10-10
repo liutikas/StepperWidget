@@ -1,4 +1,4 @@
-package net.liutikas.example;
+package net.liutikas.widget;
 
 import org.junit.Test;
 

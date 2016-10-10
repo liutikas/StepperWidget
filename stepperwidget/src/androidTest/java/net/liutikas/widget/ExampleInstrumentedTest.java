@@ -1,4 +1,4 @@
-package net.liutikas.example;
+package net.liutikas.widget;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("net.liutikas.stepperwidget", appContext.getPackageName());
+        assertEquals("net.liutikas.widget.test", appContext.getPackageName());
     }
 }
